@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Livery Works | 特工車輛塗裝製作公司</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- 全局設定 --- */
+        :root {
+            --primary: #00e5ff; /* 科技藍 */
+            --secondary: #ff0055; /* 警示紅 */
+            --gold: #ffd700; /* 黃金 */
+            --diamond: #b9f2ff; /* 鑽石 */
+            --bg: #0f1014;
+            --surface: #1a1c23;
+            --text: #ffffff;
+            --text-gray: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+        /* --- 導覽列 (12項連結) --- */
+        nav {
+            background: rgba(15, 16, 20, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #333;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; color: var(--primary); }
+        .logo i { margin-right: 10px; }
+
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+            flex-wrap: wrap; /* 允許換行以容納多連結 */
+            justify-content: flex-end;
+        }
+
+        .nav-menu a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .nav-menu a:hover { background: var(--primary); color: #000; }
+        
+        /* 手機漢堡選單按鈕 */
+        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; }
+
+        /* --- 通用區塊設定 --- */
+        section { padding: 4rem 10%; border-bottom: 1px solid #222; }
+        h2 { font-size: 2rem; margin-bottom: 2rem; text-align: center; border-left: 5px solid var(--primary); padding-left: 15px; display: inline-block; }
+        .section-header { text-align: center; margin-bottom: 3rem; }
+
+        /* 1. 介紹 (Hero) */
+        #intro {
+            height: 80vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        #intro h1 { font-size: 3.5rem; text-transform: uppercase; margin-bottom: 1rem; }
+        #intro p { max-width: 600px; color: var(--text-gray); font-size: 1.2rem; }
+
+        /* 商品展示網格 (塗裝/警示燈/衣物) */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .product-card {
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-img { width: 100%; height: 200px; object-fit: cover; background: #333; }
+        .product-info { padding: 1.5rem; }
+        .product-title { font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: bold; }
+        .tag { display: inline-block; padding: 2px 8px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 10px; }
+        .tag-livery { background: rgba(0, 229, 255, 0.2); color: var(--primary); }
+        .tag-light { background: rgba(255, 0, 85, 0.2); color: var(--secondary); }
+        .tag-cloth { background: rgba(255, 255, 255, 0.2); color: white; }
+
+        /* 5. 交易方式 */
+        .payment-methods { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; text-align: center; }
+        .pay-item i { font-size: 3rem; margin-bottom: 1rem; color: var(--primary); }
+
+        /* 6. 價目表 */
+        table.price-table { width: 100%; border-collapse: collapse; background: var(--surface); }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #333; }
+        th { background: #252830; color: var(--primary); }
+
+        /* 7 & 12. 表單 (下單/意見) */
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; color: var(--text-gray); }
+        input, select, textarea {
+            width: 100%; padding: 10px; background: #252830; border: 1px solid #444; color: white; border-radius: 4px;
+        }
+        button.submit-btn {
+            background: var(--primary); color: #000; border: none; padding: 10px 30px; font-weight: bold; cursor: pointer; width: 100%;
+        }
+        button.submit-btn:hover { background: #00c4dd; }
+
+        /* 8 & 9. 會員制度 */
+        .membership-container { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .member-card {
+            flex: 1; min-width: 300px; max-width: 400px; padding: 2rem; border-radius: 10px; text-align: center; border: 1px solid #333; position: relative;
+        }
+        .gold-card { border-color: var(--gold); background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), transparent); }
+        .diamond-card { border-color: var(--diamond); background: linear-gradient(135deg, rgba(185, 242, 255, 0.1), transparent); }
+        
+        .member-title { font-size: 1.5rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px; }
+        .gold-text { color: var(--gold); }
+        .diamond-text { color: var(--diamond); }
+        .member-price { font-size: 2.5rem; font-weight: bold; margin: 1rem 0; }
+        .member-list { list-style: none; text-align: left; padding: 0 1rem; margin-bottom: 2rem; }
+        .member-list li { margin-bottom: 10px; }
+        .member-list li i { margin-right: 10px; }
+
+        /* 10. 商城夥伴 */
+        .partners-grid { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+        .partner-logo { width: 100px; height: 100px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #555; }
+
+        /* 11. Discord */
+        #discord { background: #5865F2; text-align: center; }
+        .discord-btn { background: white; color: #5865F2; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1.2rem; display: inline-block; margin-top: 20px; }
+
+        /* 手機版調整 */
+        @media (max-width: 1024px) {
+            .nav-menu { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; width: 100%; background: #1a1c23; padding: 20px; }
+            .nav-menu.active { display: flex; }
+            .hamburger { display: block; }
+            .nav-menu a { padding: 15px; border-bottom: 1px solid #333; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo"><i class="fas fa-paint-roller"></i>AGENT LIVERY</div>
+        <div class="hamburger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <ul class="nav-menu">
+            <li><a href="#intro">介紹</a></li>
+            <li><a href="#liveries">車輛塗裝</a></li>
+            <li><a href="#lights">警示燈</a></li>
+            <li><a href="#clothes">經典服飾</a></li>
+            <li><a href="#price">價目表</a></li>
+            <li><a href="#payment">交易方式</a></li>
+            <li><a href="#order">商品下單</a></li>
+            <li><a href="#membership">會員制度</a></li>
+            <li><a href="#partners">夥伴</a></li>
+            <li><a href="#discord">Discord</a></li>
+            <li><a href="#feedback">信箱</a></li>
+        </ul>
+    </nav>
+
+    <section id="intro">
+        <h1>Agent Livery Works</h1>
+        <p>專業客製化 GTA V / FiveM 車輛塗裝設計。為您的車隊注入靈魂，定義您的專屬風格。</p>
+    </section>
+
+    <section id="liveries">
+        <div class="section-header">
+            <h2>車輛塗裝作品</h2>
+            <p>精細貼圖，高清解析度，完美適配</p>
+        </div>
+        <div class="grid-container">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80" class="product-img" alt="Livery 1">
+                <div class="product-info">
+                    <span class="tag tag-livery">LIVERY</span>
+                    <h3 class="product-title">FIB 特勤黑塗裝</h3>
+                    <p>適用車型：Dodge Charger, Tahoe</p>
+                </div>
+            </div>
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80" class="product-img" alt="Livery 2">
+                <div class="product-info">
+                    <span class="tag tag-livery">LIVERY</span>
+                    <h3 class="product-title">LSPD 經典黑白</h3>
+                    <p>適用車型：CVPI, Explorer</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="lights">
+        <div class="section-header">
+            <h2>公務車警示燈 ELS</h2>
+            <p>高亮度、多模式、低延遲配置</p>
+        </div>
+        <div class="grid-container">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1452696024259-cb7474e79947?auto=format&fit=crop&q=80" class="product-img" alt="Light 1">
+                <div class="product-info">
+                    <span class="tag tag-light">LIGHTS</span>
+                    <h3 class="product-title">紅藍爆閃燈條 V2</h3>
+                    <p>頂部與進氣壩整合燈組</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="clothes">
+        <div class="section-header">
+            <h2>經典上衣/褲</h2>
+            <p>EUP 客製化制服與戰術裝備</p>
+        </div>
+        <div class="grid-container">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1512353087810-25dfcd100962?auto=format&fit=crop&q=80" class="product-img" alt="Cloth 1">
+                <div class="product-info">
+                    <span class="tag tag-cloth">CLOTHES</span>
+                    <h3 class="product-title">特工防彈背心與風衣</h3>
+                    <p>含名牌客製化服務</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="price">
+        <div class="section-header">
+            <h2>商品價目表</h2>
+        </div>
+        <table class="price-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>說明</th>
+                    <th>價格 (TWD)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>單車塗裝設計</td>
+                    <td>依現有車模製作</td>
+                    <td>$300 起</td>
+                </tr>
+                <tr>
+                    <td>車隊統一樣式 (5台)</td>
+                    <td>相同設計語彙</td>
+                    <td>$1,200</td>
+                </tr>
+                <tr>
+                    <td>客製化 EUP 制服</td>
+                    <td>上衣 + 褲子</td>
+                    <td>$500</td>
+                </tr>
+                <tr>
+                    <td>警示燈配置調整</td>
+                    <td>ELS / Non-ELS</td>
+                    <td>$250</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="payment">
+        <div class="section-header">
+            <h2>交易方式</h2>
+            <p>支援多種支付管道，保障您的交易安全</p>
+        </div>
+        <div class="payment-methods">
+            <div class="pay-item">
+                <i class="fas fa-university"></i>
+                <h3>銀行轉帳</h3>
+                <p>玉山銀行 (808)</p>
+            </div>
+            <div class="pay-item">
+                <i class="fab fa-paypal"></i>
+                <h3>PayPal</h3>
+                <p>國際買家適用</p>
+            </div>
+            <div class="pay-item">
+                <i class="fas fa-barcode"></i>
+                <h3>超商代碼</h3>
+                <p>需加收 30元 手續費</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="order">
+        <div class="section-header">
+            <h2>商品下單區</h2>
+            <p>填寫您的需求，我們將盡快與您聯繫</p>
+        </div>
+        <form style="max-width: 600px; margin: 0 auto;" onsubmit="event.preventDefault(); alert('下單資訊已送出！請至 Discord 開票確認。');">
+            <div class="form-group">
+                <label>您的 Discord ID / 暱稱</label>
+                <input type="text" placeholder="例如：Agent007#1234" required>
+            </div>
+            <div class="form-group">
+                <label>選擇服務項目</label>
+                <select>
+                    <option>車輛塗裝設計</option>
+                    <option>警示燈配置</option>
+                    <option>服飾客製</option>
+                    <option>購買現成商品</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>詳細需求說明</label>
+                <textarea rows="5" placeholder="請描述您的車型、配色需求..."></textarea>
+            </div>
+            <button type="submit" class="submit-btn">送出訂單</button>
+        </form>
+    </section>
+
+    <section id="membership">
+        <div class="section-header">
+            <h2>會員訂閱方案</h2>
+            <p>加入會員，享受尊榮禮遇與折扣</p>
+        </div>
+        <div class="membership-container">
+            <div class="member-card gold-card">
+                <div class="member-title gold-text">Gold Member</div>
+                <div class="member-title">黃金會員</div>
+                <div class="member-price">$500 <span style="font-size:1rem; color:#aaa">/ 月</span></div>
+                <ul class="member-list">
+                    <li><i class="fas fa-check gold-text"></i> 全館商品 9 折優惠</li>
+                    <li><i class="fas fa-check gold-text"></i> 優先排單製作權</li>
+                    <li><i class="fas fa-check gold-text"></i> 每月免費領取一款通用塗裝</li>
+                    <li><i class="fas fa-check gold-text"></i> Discord 黃金身分組</li>
+                </ul>
+                <button class="submit-btn" style="background: var(--gold);">加入黃金會員</button>
+            </div>
+
+            <div class="member-card diamond-card">
+                <div class="member-title diamond-text">Diamond Member</div>
+                <div class="member-title">鑽石會員</div>
+                <div class="member-price">$1,200 <span style="font-size:1rem; color:#aaa">/ 月</span></div>
+                <ul class="member-list">
+                    <li><i class="fas fa-check diamond-text"></i> 全館商品 8 折優惠</li>
+                    <li><i class="fas fa-check diamond-text"></i> 急單免加價 (最速件)</li>
+                    <li><i class="fas fa-check diamond-text"></i> 每月專屬客製化塗裝 x1</li>
+                    <li><i class="fas fa-check diamond-text"></i> Discord 鑽石身分組 + 專屬頻道</li>
+                    <li><i class="fas fa-check diamond-text"></i> 搶先體驗測試版資源</li>
+                </ul>
+                <button class="submit-btn" style="background: var(--diamond);">加入鑽石會員</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="partners">
+        <div class="section-header">
+            <h2>商城合作夥伴</h2>
+        </div>
+        <div class="partners-grid">
+            <div class="partner-logo">車模廠 A</div>
+            <div class="partner-logo">腳本商 B</div>
+            <div class="partner-logo">伺服器 C</div>
+            <div class="partner-logo">地圖師 D</div>
+        </div>
+    </section>
+
+    <section id="discord">
+        <h2>加入我們的社群</h2>
+        <p style="margin-bottom: 20px;">獲取最新更新、售後支援與玩家交流</p>
+        <a href="https://discord.gg/YOUR_INVITE_LINK" target="_blank" class="discord-btn">
+            <i class="fab fa-discord"></i> 加入 Discord 伺服器
+        </a>
+    </section>
+
+    <section id="feedback" style="border-bottom: none;">
+        <div class="section-header">
+            <h2>意見信箱</h2>
+            <p>有任何建議或客訴？請告訴我們</p>
+        </div>
+        <form style="max-width: 600px; margin: 0 auto;" onsubmit="event.preventDefault(); alert('感謝您的意見！我們會盡快處理。');">
+            <div class="form-group">
+                <label>聯絡 Email</label>
+                <input type="email" required>
+            </div>
+            <div class="form-group">
+                <label>意見內容</label>
+                <textarea rows="4" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn" style="background: #333; color: white;">送出意見</button>
+        </form>
+    </section>
+
+    <footer style="background: #000; padding: 2rem; text-align: center; color: #555;">
+        <p>&copy; 2024 Agent Vehicle Livery. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // 手機版選單切換腳本
+        function toggleMenu() {
+            const menu = document.querySelector('.nav-menu');
+            menu.classList.toggle('active');
+        }
+    </script>
+
+</body>
+</html>
